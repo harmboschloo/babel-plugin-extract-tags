@@ -1,4 +1,4 @@
-import tagger from 'extract-tags';
+import tagger from 'tagger';
 
 tagger.prop1`
   tagged member 1

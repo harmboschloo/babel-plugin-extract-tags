@@ -1,9 +1,9 @@
 {
   "plugins": [
     [
-      "../../../src/babel-plugin",
+      "../../../src",
       {
-        "taggerModules": ["extract-tags/a", "extract-tags/b"]
+        "taggerModules": ["tagger/a", "tagger/b"]
       }
     ]
   ]

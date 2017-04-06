@@ -1,4 +1,4 @@
-import tagger from 'extract-tags';
+import tagger from 'tagger';
 
 tagger`
   tagged

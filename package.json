@@ -1,14 +1,11 @@
 {
-  "name": "extract-tags",
-  "version": "0.3.0",
+  "name": "babel-plugin-extract-tags",
+  "version": "0.4.0",
   "description": "Babel plugin to extracts tagged template literals to file. Files can be loaded by webpack.",
   "files": [
-    "lib",
-    "index.js",
-    "babel-plugin.js",
-    "css.js",
-    "css-babel-plugin.js"
+    "lib"
   ],
+  "main": "lib/index.js",
   "dependencies": {
     "mkdirp": "^0.5.1"
   },
@@ -34,14 +31,13 @@
   "author": "Harm Boschloo",
   "repository": {
     "type": "git",
-    "url": "git://github.com/harmboschloo/extract-tags.git"
+    "url": "git://github.com/harmboschloo/babel-plugin-extract-tags.git"
   },
-  "homepage": "https://github.com/harmboschloo/extract-tags",
+  "homepage": "https://github.com/harmboschloo/babel-plugin-extract-tags",
   "keywords": [
     "babel plugin",
     "tagged template literals",
-    "webpack",
-    "css"
+    "webpack"
   ],
   "license": "MIT"
 }

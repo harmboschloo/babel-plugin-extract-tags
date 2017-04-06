@@ -1,6 +1,6 @@
-import tagger from 'extract-tags';
-import taggerA from 'extract-tags/a';
-import taggerB from 'extract-tags/b';
+import tagger from 'tagger';
+import taggerA from 'tagger/a';
+import taggerB from 'tagger/b';
 
 tagger`
   tagged
