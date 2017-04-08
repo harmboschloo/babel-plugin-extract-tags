@@ -1,8 +1,7 @@
 import fp from 'path';
 import fs from 'fs';
 import mkdirp from 'mkdirp';
-import hash from 'string-hash';
-import {generateAlphabeticName} from './utils/generateName';
+import hash from './utils/hash';
 
 const initialOptions = {
   taggerModule: 'tagger',
@@ -146,8 +145,7 @@ export const createPlugin = (createOptions = {}) => ({types : t}) => {
           }
 
           const taggedString = quasis[0].value.cooked;
-          const taggedHash = hash(taggedString);
-          const taggedHashName = generateAlphabeticName(taggedHash);
+          const taggedProps = hash.digest(taggedString);
           const {file} = data;
 
           // construct output path
@@ -159,7 +157,7 @@ export const createPlugin = (createOptions = {}) => ({types : t}) => {
 
           // replace tagged template expression with tagger function call
           const tagId = path.scope.generateUid('tag');
-          console.log('hash', tagId, taggedHash, taggedHashName);
+          console.log('hash', tagId, taggedProps);
           path.replaceWith(
             t.callExpression(
               t.cloneDeep(tag),
