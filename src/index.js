@@ -1,7 +1,7 @@
 import fp from 'path';
 import fs from 'fs';
 import mkdirp from 'mkdirp';
-import hash from './utils/hash';
+import stringHash from 'string-hash';
 
 const initialOptions = {
   taggerModule: 'tagger',
@@ -83,7 +83,7 @@ export const createPlugin = (createOptions = {}) => ({types : t}) => {
     data.taggers.find(tagger => tagger.name === name);
 
   const getRelativeOutputFilePath = outputFilePath => {
-    const path = fp.relative(data.file.dir, outputFilePath)
+    const path = fp.relative(fp.dirname(data.filename), outputFilePath)
       .replace(/\\/g, '/');
     return path.charAt(0) !== '.' ? './' + path : path;
   }
@@ -92,12 +92,13 @@ export const createPlugin = (createOptions = {}) => ({types : t}) => {
   return {
     visitor: {
       Program(path, state) {
-        if (!path.hub.file.opts.filename) {
+        const filename = path.hub.file.opts.filename;
+        if (!filename) {
           throw path.buildCodeFrameError("Filename required");
         }
 
         data.options = getOptions(state.opts);
-        data.file = fp.parse(path.hub.file.opts.filename);
+        data.filename = filename;
         data.taggers = [];
         data.insertPath = null;
 
@@ -144,20 +145,36 @@ export const createPlugin = (createOptions = {}) => ({types : t}) => {
             throw path.buildCodeFrameError("No expressions allowed");
           }
 
-          const taggedString = quasis[0].value.cooked;
-          const taggedProps = hash.digest(taggedString);
-          const {file} = data;
+          const taggedContent = quasis[0].value.cooked;
+          const outputContent =
+            `${options.taggedPrefix}${taggedContent}${options.taggedSuffix}`;
 
-          // construct output path
+          const file = fp.parse(data.filename);
           const relativePath = fp.relative(options.outputPath, file.dir);
           const strippedPath = relativePath.replace(/\.\./g, '.');
           const outputPath = fp.join(options.outputPath, strippedPath);
+          const tagId = path.scope.generateUid('tag');
+          const outputFilename =
+            `${file.name}${tagId}.${options.outputFileExtension}`;
+          const outputFilePath = fp.join(outputPath, outputFilename);
 
-          mkdirp.sync(outputPath);
+          const taggedProps = {
+            source: data.filename,
+            tag: tagProps,
+            tagOptions: options,
+            tagId,
+            taggedContent,
+            outputContent,
+            outputFilePath
+          }
+
+          const outputProps = options.taggedCallback
+            ? options.taggedCallback(taggedProps)
+            : taggedProps;
+
+          mkdirp.sync(fp.dirname(outputProps.outputFilePath));
 
           // replace tagged template expression with tagger function call
-          const tagId = path.scope.generateUid('tag');
-          console.log('hash', tagId, taggedProps);
           path.replaceWith(
             t.callExpression(
               t.cloneDeep(tag),
@@ -166,13 +183,16 @@ export const createPlugin = (createOptions = {}) => ({types : t}) => {
           );
 
           // write tagged string to output file
-          const outputFilename = `${file.name}${tagId}.${options.outputFileExtension}`;
-          const outputFilePath = fp.join(outputPath, outputFilename);
-          const outputString = `${options.taggedPrefix}${taggedString}${options.taggedSuffix}`;
-          fs.writeFileSync(outputFilePath, outputString);
+          // TODO check for write failure
+          // TODO optionally check unique content collision
+          fs.writeFileSync(
+            outputProps.outputFilePath,
+            outputProps.outputContent
+          );
 
           // add import of output file
-          const relativeOutputFilePath = getRelativeOutputFilePath(outputFilePath);
+          const relativeOutputFilePath =
+            getRelativeOutputFilePath(outputProps.outputFilePath);
           data.insertPath.insertBefore(
             t.importDeclaration(
               [t.importDefaultSpecifier(t.identifier(tagId))],
