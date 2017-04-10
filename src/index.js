@@ -1,7 +1,6 @@
 import fp from 'path';
 import fs from 'fs';
 import mkdirp from 'mkdirp';
-import stringHash from 'string-hash';
 
 const initialOptions = {
   taggerModule: 'tagger',
