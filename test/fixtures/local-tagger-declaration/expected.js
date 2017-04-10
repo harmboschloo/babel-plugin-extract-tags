@@ -1,7 +1,6 @@
-import tagger from 'tagger';
+import tagger from "tagger";
 
 function a() {
-
   const tagger = a => a;
 
   tagger`

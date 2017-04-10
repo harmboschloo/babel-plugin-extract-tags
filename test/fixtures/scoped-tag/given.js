@@ -1,4 +1,4 @@
-import tagger from 'tagger';
+import tagger from "tagger";
 
 function a() {
   tagger`

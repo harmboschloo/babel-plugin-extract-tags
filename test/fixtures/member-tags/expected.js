@@ -1,7 +1,7 @@
-import _tag from '../../../output/test/fixtures/member-tags/given_tag.1.txt';
-import _tag2 from '../../../output/test/fixtures/member-tags/given_tag2.2.txt';
-import _tag3 from '../../../output/test/fixtures/member-tags/given_tag3.txt';
-import tagger from 'tagger';
+import _tag from "../../../output/test/fixtures/member-tags/given_tag.1.txt";
+import _tag2 from "../../../output/test/fixtures/member-tags/given_tag2.2.txt";
+import _tag3 from "../../../output/test/fixtures/member-tags/given_tag3.txt";
+import tagger from "tagger";
 
 tagger.prop1(_tag);
 

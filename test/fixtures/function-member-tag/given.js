@@ -1,5 +1,5 @@
-import tagger from 'tagger';
+import tagger from "tagger";
 
-tagger.prop('x')`
+tagger.prop("x")`
   tagged
 `;
