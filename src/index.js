@@ -168,6 +168,7 @@ export const createPlugin = (createOptions = {}) =>
               outputFilePath
             };
 
+            // TODO test
             const outputProps = options.taggedCallback
               ? options.taggedCallback(taggedProps)
               : taggedProps;
