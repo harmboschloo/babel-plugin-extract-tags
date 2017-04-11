@@ -152,48 +152,59 @@ export const createPlugin = (createOptions = {}) =>
             const strippedPath = relativePath.replace(/\.\./g, ".");
             const outputPath = fp.join(options.outputPath, strippedPath);
             const tagId = path.scope.generateUid("tag");
+            const tagIdIdentifier = t.identifier(tagId);
+            const tagArguments = [tagIdIdentifier];
             const outputFilename = file.name +
               tagId +
               "." +
               options.outputFileExtension;
             const outputFilePath = fp.join(outputPath, outputFilename);
 
-            const taggedProps = {
+            const initialTaggedProps = {
               source: data.filename,
               tag: tagProps,
               tagOptions: options,
               tagId,
+              tagIdIdentifier,
+              tagArguments,
               taggedContent,
               outputContent,
               outputFilePath
             };
 
-            const outputProps = options.taggedCallback
-              ? options.taggedCallback(taggedProps)
-              : taggedProps;
-
-            mkdirp.sync(fp.dirname(outputProps.outputFilePath));
-
-            // replace tagged template expression with tagger function call
-            path.replaceWith(
-              t.callExpression(t.cloneDeep(tag), [t.identifier(tagId)])
-            );
+            const taggedProps = options.taggedCallback
+              ? {
+                  ...initialTaggedProps,
+                  ...options.taggedCallback(initialTaggedProps, t)
+                }
+              : initialTaggedProps;
 
             // write tagged string to output file
             // TODO check for write failure
             // TODO optionally check unique content collision
+            mkdirp.sync(fp.dirname(taggedProps.outputFilePath));
             fs.writeFileSync(
-              outputProps.outputFilePath,
-              outputProps.outputContent
+              taggedProps.outputFilePath,
+              taggedProps.outputContent
+            );
+
+            // replace tagged template expression with tagger function call
+            path.replaceWith(
+              t.callExpression(t.cloneDeep(tag), taggedProps.tagArguments)
             );
 
             // add import of output file
+            const hasTagId = taggedProps.tagArguments.some(a =>
+              t.shallowEqual(a, tagIdIdentifier));
+            const importSpecifiers = hasTagId
+              ? [t.importDefaultSpecifier(tagIdIdentifier)]
+              : [];
             const relativeOutputFilePath = getRelativeOutputFilePath(
-              outputProps.outputFilePath
+              taggedProps.outputFilePath
             );
             data.insertPath.insertBefore(
               t.importDeclaration(
-                [t.importDefaultSpecifier(t.identifier(tagId))],
+                importSpecifiers,
                 t.stringLiteral(relativeOutputFilePath)
               )
             );

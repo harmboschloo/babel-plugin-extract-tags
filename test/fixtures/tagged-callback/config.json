@@ -11,6 +11,14 @@
     {
       "actual": "../../../output/test/fixtures/tagged-callback/given_tag3.txt",
       "expected": "expected-output3.txt"
+    },
+    {
+      "actual": "../../../output/test/fixtures/tagged-callback/given_tag4.txt",
+      "expected": "expected-output4.txt"
+    },
+    {
+      "actual": "../../../output/test/fixtures/tagged-callback/given_tag5.txt",
+      "expected": "expected-output5.txt"
     }
   ]
 }
