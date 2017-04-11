@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-extract-tags",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Babel plugin to extracts tagged template literals to file. Files can be loaded by webpack.",
   "files": [
     "lib"
